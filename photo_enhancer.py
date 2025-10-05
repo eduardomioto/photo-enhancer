@@ -167,6 +167,33 @@ def enhance_photo(input_path, output_path, profile_name, verbose=True):
     # Load image
     img = Image.open(input_path)
 
+    # Handle EXIF orientation to maintain correct rotation
+    try:
+        # Get EXIF data
+        exif = img.getexif()
+
+        # EXIF orientation tag is 274 (0x0112)
+        orientation = exif.get(274)
+
+        # Apply orientation transformations
+        if orientation == 2:
+            img = img.transpose(Image.FLIP_LEFT_RIGHT)
+        elif orientation == 3:
+            img = img.rotate(180, expand=True)
+        elif orientation == 4:
+            img = img.transpose(Image.FLIP_TOP_BOTTOM)
+        elif orientation == 5:
+            img = img.transpose(Image.FLIP_LEFT_RIGHT).rotate(90, expand=True)
+        elif orientation == 6:
+            img = img.rotate(270, expand=True)
+        elif orientation == 7:
+            img = img.transpose(Image.FLIP_LEFT_RIGHT).rotate(270, expand=True)
+        elif orientation == 8:
+            img = img.rotate(90, expand=True)
+    except (AttributeError, KeyError, IndexError):
+        # No EXIF data or orientation info, continue normally
+        pass
+
     # Convert to RGB if necessary
     if img.mode != 'RGB':
         img = img.convert('RGB')
@@ -210,8 +237,22 @@ def enhance_photo(input_path, output_path, profile_name, verbose=True):
         if verbose:
             print(f"  - Warmth: {profile.warmth:+d}%")
 
-    # Save the result
-    img.save(output_path, quality=95)
+    # Preserve EXIF data when saving
+    try:
+        # Get original EXIF data
+        original_img = Image.open(input_path)
+        exif_data = original_img.getexif()
+
+        # Remove orientation tag since we've already applied it
+        if 274 in exif_data:
+            del exif_data[274]
+
+        # Save with preserved EXIF data
+        img.save(output_path, quality=95, exif=exif_data)
+    except Exception:
+        # If EXIF preservation fails, save normally
+        img.save(output_path, quality=95)
+
     if verbose:
         print(f"\nSaved to: {output_path}")
 

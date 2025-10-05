@@ -1,12 +1,15 @@
-# Photo Enhancement CLI Tool
+# Photo Enhancement Tool
 
-A command-line tool for photo enhancement with predefined profiles for quick and professional photo improvements.
+A Python-based photo enhancement tool with both **Command Line Interface (CLI)** and **Desktop GUI** options. Apply professional edits with predefined profiles for quick and high-quality photo improvements.
 
 ## Features
 
-- **CLI-based tool** - Easy to use from the command line
+- **Desktop GUI** - User-friendly graphical interface with drag-and-drop workflow
+- **CLI-based tool** - Easy to use from the command line for automation
 - **Profile-based enhancement system** - Apply consistent edits with a single command
 - **Batch processing** - Process entire folders of images at once
+- **EXIF orientation handling** - Automatically maintains correct photo orientation
+- **EXIF metadata preservation** - Keeps important image metadata (camera info, date, location, etc.)
 - **Multiple adjustment types** - HDR, brightness, contrast, saturation, warmth, shadows, and white point
 - **Professional algorithms** - Advanced image processing for high-quality results
 - **Easy to customize** - Create your own profiles or modify existing ones
@@ -28,22 +31,45 @@ chmod +x photo_enhancer.py
 
 ## Quick Start
 
-### List Available Profiles
+### Easy Launcher (Recommended for First-Time Users)
+
+```bash
+python run.py
+```
+
+This will give you a simple menu to choose between GUI or CLI mode.
+
+### Using the Desktop GUI (Easiest)
+
+```bash
+python photo_enhancer_gui.py
+```
+
+Then:
+1. Choose "Single Image" or "Folder (Batch)" mode
+2. Click "Browse..." to select your input
+3. Choose where to save the output
+4. Select an enhancement profile
+5. Click "Start Processing"
+
+### Using the Command Line
+
+**List Available Profiles:**
 ```bash
 python photo_enhancer.py --list-profiles
 ```
 
-### Enhance a Single Photo
+**Enhance a Single Photo:**
 ```bash
 python photo_enhancer.py -i photo.jpg -o enhanced.jpg -p HDR_Boost
 ```
 
-### Enhance All Photos in a Folder
+**Enhance All Photos in a Folder:**
 ```bash
 python photo_enhancer.py -f photos -o enhanced -p HDR_Boost
 ```
 
-### Quiet Mode (Minimal Output)
+**Quiet Mode (Minimal Output):**
 ```bash
 python photo_enhancer.py -f photos -o enhanced -p Vibrant --quiet
 ```
@@ -90,6 +116,86 @@ Optimized for people with flattering warmth:
 - Warmth: +15%
 
 **Best for:** Portrait photography, headshots, people-focused images
+
+## Desktop GUI
+
+The GUI provides a user-friendly interface for those who prefer not to use the command line.
+
+### Features
+
+- **Visual profile selection** with detailed information display
+- **Browse buttons** for easy file/folder selection
+- **Progress tracking** with visual progress bar
+- **Real-time status updates**
+- **Profile preview** showing all adjustment values
+- **Batch processing** with automatic output organization
+- **Threaded processing** keeps the UI responsive during enhancement
+
+### GUI Workflow
+
+1. **Launch the GUI:**
+   ```bash
+   python photo_enhancer_gui.py
+   ```
+
+2. **Select Processing Mode:**
+   - Single Image - Process one photo at a time
+   - Folder (Batch) - Process all images in a folder
+
+3. **Choose Input:**
+   - Click "Browse..." to select your photo or folder
+   - The output path will be auto-suggested
+
+4. **Select Output:**
+   - Click "Browse..." to choose where to save
+   - For folders, you can choose to create subfolders per profile
+
+5. **Pick Profile:**
+   - Select from the dropdown menu
+   - View profile details below the dropdown
+   - Click "View All Profiles" for complete information
+
+6. **Start Processing:**
+   - Click "Start Processing" button
+   - Watch the progress bar
+   - Get notification when complete
+
+### GUI Screenshot Description
+
+The GUI includes:
+- Mode selection (Single/Folder)
+- Input and output browse buttons
+- Profile dropdown with live preview
+- Options checkbox for subfolder creation
+- Progress bar and status indicator
+- Action buttons (Start, Clear, Exit)
+
+### Creating Desktop Shortcuts
+
+**Windows:**
+1. Right-click `photo_enhancer_gui.py`
+2. Select "Create shortcut"
+3. Right-click the shortcut → Properties
+4. Change "Target" to: `python "C:\path\to\photo_enhancer_gui.py"`
+5. Click "Change Icon" to customize (optional)
+
+**macOS:**
+1. Open Automator
+2. Create new "Application"
+3. Add "Run Shell Script" action
+4. Enter: `cd /path/to/folder && python3 photo_enhancer_gui.py`
+5. Save as "Photo Enhancer.app"
+
+**Linux:**
+Create a `.desktop` file:
+```ini
+[Desktop Entry]
+Name=Photo Enhancer
+Exec=python3 /path/to/photo_enhancer_gui.py
+Icon=/path/to/icon.png
+Type=Application
+Categories=Graphics;
+```
 
 ## Usage Examples
 
@@ -204,11 +310,14 @@ All adjustment values and their ranges:
 - Python 3.7+
 - Pillow >= 10.0.0
 - numpy >= 1.24.0
+- tkinter (included with Python - needed for GUI only)
+
+**Note:** tkinter comes pre-installed with most Python distributions. If you only use the CLI, tkinter is not required.
 
 ## Supported File Formats
 
 The script supports the following image formats:
-- JPEG (.jpg, .jpeg)
+- JPEG (.jpg, .jpeg) - Full EXIF support
 - PNG (.png)
 - BMP (.bmp)
 - TIFF (.tiff)
@@ -216,19 +325,26 @@ The script supports the following image formats:
 
 All formats are automatically detected when processing folders.
 
+**EXIF Data Handling:**
+- Automatically corrects orientation based on EXIF data (common with smartphone photos)
+- Preserves camera metadata, timestamps, GPS location, and other EXIF information
+- Removes orientation tag after applying the correction to prevent double-rotation
+
 ## File Structure
 
 ```
 .
-├── photo_enhancer.py    # Main CLI script
-├── requirements.txt     # Dependencies
-├── README.md           # This file
-├── photos/             # Your input images
+├── photo_enhancer.py        # Core enhancement functions & CLI
+├── photo_enhancer_gui.py    # Desktop GUI application
+├── run.py                   # Easy launcher (choose GUI or CLI)
+├── requirements.txt         # Dependencies
+├── README.md               # This file
+├── photos/                 # Your input images
 │   ├── photo1.jpg
 │   ├── photo2.jpg
 │   └── photo3.jpg
-└── enhanced/           # Output folder (auto-created by CLI)
-    ├── HDR_Boost/      # Subfolder per profile (auto-created)
+└── enhanced/               # Output folder (auto-created)
+    ├── HDR_Boost/          # Subfolder per profile (auto-created)
     │   ├── photo1_enhanced.jpg
     │   ├── photo2_enhanced.jpg
     │   └── photo3_enhanced.jpg
@@ -241,15 +357,29 @@ All formats are automatically detected when processing folders.
 ## Tips for Best Results
 
 1. **Start with good quality images** - Higher resolution input gives better output
-2. **Test profiles first** - Process a single image before batch processing entire folders
-3. **Don't over-process** - Sometimes less is more; try Natural_Enhance profile first
-4. **Save originals** - Always keep your original files
-5. **Compare profiles** - Process the same folder with different profiles to see what works best
-6. **Use quiet mode for automation** - Add `--quiet` flag when using in scripts
-7. **Organize output** - The script automatically creates subfolders for each profile (unless you use `--no-subfolder`)
-8. **Shell scripts** - Create bash/batch scripts to process with multiple profiles automatically
+2. **Use the GUI for beginners** - The desktop GUI is perfect if you're new to the tool
+3. **Test profiles first** - Process a single image before batch processing entire folders
+4. **Don't over-process** - Sometimes less is more; try Natural_Enhance profile first
+5. **Save originals** - Always keep your original files
+6. **Compare profiles** - Process the same folder with different profiles to see what works best
+7. **Use CLI for automation** - The command line is perfect for scripts and automated workflows
+8. **Use quiet mode for automation** - Add `--quiet` flag when using CLI in scripts
+9. **Organize output** - The tool automatically creates subfolders for each profile (unless you use `--no-subfolder`)
+10. **Create shortcuts** - Make desktop shortcuts for the GUI for quick access
 
 ## Troubleshooting
+
+**GUI won't start / tkinter errors:**
+- tkinter should come with Python, but on some Linux systems you may need to install it:
+  - Ubuntu/Debian: `sudo apt-get install python3-tk`
+  - Fedora: `sudo dnf install python3-tkinter`
+  - Arch: `sudo pacman -S tk`
+- On macOS, ensure you're using the official Python from python.org (not Homebrew)
+
+**Photos appear rotated incorrectly:**
+- The script automatically handles EXIF orientation data from cameras and smartphones
+- If issues persist, the original photo may have corrupted EXIF data
+- Try opening and re-saving the original in a photo editor first
 
 **"Error: Must specify either --input or --folder":**
 - You need to provide either `-i` (single file) or `-f` (folder) argument
@@ -319,6 +449,31 @@ Feel free to create your own profiles and share them! To add a profile:
 
 ## Quick Reference
 
+### Easy Launcher
+```bash
+# Start with the launcher menu
+python run.py
+
+# Choose:
+# 1 - GUI (visual interface)
+# 2 - CLI (shows command examples)
+# 3 - Exit
+```
+
+### GUI (Desktop Application)
+```bash
+# Launch the GUI
+python photo_enhancer_gui.py
+
+# Then use the visual interface to:
+# 1. Select mode (Single/Folder)
+# 2. Browse for input
+# 3. Choose output location
+# 4. Pick profile
+# 5. Click "Start Processing"
+```
+
+### CLI (Command Line)
 ```bash
 # Show all profiles
 python photo_enhancer.py --list-profiles

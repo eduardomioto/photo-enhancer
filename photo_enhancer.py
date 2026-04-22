@@ -31,12 +31,12 @@ PROFILES = {
     "HDR_Boost": PhotoProfile(
         name="HDR Boost",
         hdr=100,
-        brightness=10,
-        contrast=10,
-        white_point=5,
+        brightness=20,
+        contrast=20,
+        white_point=10,
         shadows=25,
-        saturation=25,
-        warmth=10
+        saturation=40,
+        warmth=20
     ),
     "Natural_Enhance": PhotoProfile(
         name="Natural Enhance",
